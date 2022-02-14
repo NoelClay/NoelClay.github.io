@@ -41,3 +41,38 @@ scores[3] = 90;
 scores[4] = 34;
 ```
 
+배열의 활용 출력
+>foreach( int score in socres ) Console.WriteLine( score );
+배열의 활용 계산
+```c#
+int sum = 0;
+foreach( int score in scores )  sum += score;
+int average = sum/scores.Length;//Length는 배열 객체의 길이를 알려주는 프로퍼티
+```
+배열의 첫번째 인덱스는 0입니다. 5개를 저장하는 배열의 마지막 인덱스는 4일 것 이다.
+
+항상 마지막 인덱스는 [배열이름.Length-1]로 접근한다.
+
+C# 8.0에서는 이런 불편을 없앤 **System.Index** 형식과 **^** 연산자가 생겼다. 
+
+^ 연산자는 **컬렉션**의 마지막부터 역순으로 인덱스를 지정하는 기능을 가진다.
+
+^ 연산자의 연산 결과는 System.Index 형식의 인스턴스로 나타낸다.
+```C#
+System.Index last = ^1;
+scores[last] = 34; // scores[scores.Length - 1] = 34; 와 동일
+```
+일일히 인덱스형식 인스턴스를 인덱스형식 변수에 할당하여 사용하지 않아도 알아서 인덱스인스턴스를 바로 인덱스로 사용 가능하다.
+```c#
+scores[^1] = 34; // scores[scores.Length - 1] = 34; 와 동일
+```
+
+# 10.2 배열을 초기화하는 방법 세 가지
+
+첫 번째, 데이터형식[ ] 배열이름 = new 데이터 형식 [ 용량 ] { //배열에 들어갈 요소들 콤마로 구분하여 작성};
+
+위 처럼 배열 객체를 초기화하는 {} 블록을 컬렉션 초기자 Collection Initializer라고 부른다.
+
+<br/>
+두 번째
+
