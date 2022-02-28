@@ -1,6 +1,6 @@
 ---
 layout: single
-tilte: "1.0 VR 개요"
+tilte: "1.1 매직복셀 제작"
 categories: Life Unity VRAR TextBook
 tag: [study, Unity]
 toc: true
@@ -570,258 +570,367 @@ float 거리값을 반환해줄 것이다.</br>
 </br>
 
 ## 1.2.1 프로퍼티 정의
-</br>
-
-</br></br></br>
-
-## 4.9.1.2 배경 이미지 배치
-
-</br>
-
-
-해상도 비율과 유사한 이미지를 선택해 다운 받고 Materials 폴더에 복사
-
-UI - Raw Image 오브젝트 생성 
-
-Raw Image는 Sprite 타입뿐만 아니라 일반  텍스쳐도 사용가능한 범용적인 컴포넌트
-
-</br>
-
-## 4.9.1.3 입력란 배치
-</br>
-
-입력란은 각각 아이디라는 텍스트와 실제 텍스트를 입력할 입력란 2가지가 필요하다.
-
-텍스트 오브젝트를 생성하고 아이디가 나오게 입력.
-
-그리고 옆에 배치할 입력란은 Input Field 오브젝트를 선택하여 만든다.
-
-인풋 필드는 입력 영역 박스 이미지 외에 자식 오브젝트로 
-
-사용자가 입력하기를 대기하고 있는 플레이스 홀더와 
-
-사용자가 입력하면 그것을 보여주는 텍스트를 갖고 있다.
-
-플레이스 홀더 안에 Text 컴포넌트를 '아이디 입력'으로 변경.
-
-인풋 필드 컴포넌트에는 사용자 입력 조건에 관한 설정항목들이 존재.
-
-|항목|설명|
-|-----|---|
-|Text Component| 사용자의 텍스트 입력설정을 위한 오브젝트를 지정|
-|Text| 사용자의 입력 내요이 저장될 변수|
-|Character Limit|입력 가능한 문자열의 개수(영문, 숫자는 한 문자당 1씩 소모,</br>한글의 경우 한문자당 2를 소모), 이 항목이 0이면 제한없음.|
-|Content Type|Standard: 모든 숫자, 모든 문자열</br>Integer: 정수만</br>Decimal: 실수만</br>Alphanumeric: 양의 정수만</br>Name: 문자열만</br>Email: 이메일 형식만</br>Password: 입력된  ***형태로 가려져서 표시. 모든 숫자, 모든 문자열</br>PIN: 입력된 데이터가 ***형태로 가려져서 표시. 양의 정수만</br>Custom: 사용자 설정으로 입력 제한|
-|Line Type|Single Line: 한 줄로만 입력 가능</br> Multi Line Submit: 여러 주로 입력 가능. 자동 개행</br> Multi Line New Line: 여러 줄로 입력 가능. 사용자가 Enter 키를 누르면 개행|
-|Placeholder| 미입력 시 표시될 텍스트 오브젝트를 지정할 수 있는 항목|
-|Caret Blink Rate|커서의 깜빡임 속도|
-|Caret Width|커서의 두께|
-|Custom Caret Color|커서의 색상|
-|Selection Color|모두 선택된 텍스트의 선택 영역 색상|
-|Hide Mobile Input|모바일 장치에서 화면 키보드에 연결된 기본 입력 필드를 숨김(IOS일 때만)|
-
-</br>
-
-## 4.9.1.4 새로 생성 버튼, 로그인 버튼, 에러 텍스트 배치
-
-</br>
-
-버튼 오브젝트를 밑에 두고, 에러 텍스트를 위에 배치한다.
-
-</br>
-
-# 4.9.2 로그인 기능 구성
-
-</br>
-
-> 목표
-
-    사용자 데이터를 새로 작성하거나 저장된 데이터를 읽어 사용자 입력과 일치하는지 검사
-
-> 순서
-
-    1. 인풋 필드의 값을 읽기 위한 변수 만들기
-    2. 사용자의 아이디는 Key로 패스워드를 Value로 설정해 저장하는 기능 만들기
-    3. 사용자의 아이디를 키로 사용해 패스워드 값을 읽어오는 기능
-    4. 사용자의 입력이 비어있다면 기능이 없도록 제어
-    5. 로그인 화면 UI 버튼과 기능 연결
 
 
 </br>
 
-## 4.9.2.1 인풋 필드의 값을 읽기 위한 변수
 
-</br>
+#define PC 를 주석처리하여 #if PC ... #endif 전처리기 블록을 읽지 않도록 한다.
 
-LoginManager라는새로운 스크립트 생성.
+#define Oculus를 추가하여 전처리기 Oculus를 참으로 만들어 #if Oculus ... #endif 를 읽게 만든다.
 
-InputField를 연결하여 접근하는 public InputField 변수를 선언
+오큘러스 VR 환경에서 제일 다른 점은 컨트롤러와 헤드셋을 이용하여 입력을 컨트롤하고, 게임과 상호작용 한다는 점이다.
 
-에러가 나든 일치를하든 현재 상태를 알려줄 텍스트를 public으로 연결
+센서의 정보들, 버튼과 스틱, 터치 등등을 가져와서 제어하기 위해서는 OVRCameraRig의 TrackingSpace 객체를 가져와서 사용해야 한다.
+
+TrackingSpacd를 static 변수에 넣어서 숨기되, 동적으로 저장하고 불러올 수 있도록 하는 코드를 작성한다.
 
 ```c#
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+#if Oculus
+    //오큘러스 환경에서 컨트롤러를 제어하기 위해서는 OVRCameraRig의 TrackinSpace 객체를 가져와서 하위 정보들을 활용해야 한다.
+    static Transform rootTransform;
+#endif
 
-public class LoginManager : MonoBehaviour
-{
-    
-    public InputField id;
-
-    public InputField password;
-
-    public Text notify;
-    // Start is called before the first frame update
-    void Start()
+#if Oculus
+    static Transform GetTransform()
     {
-        //처음엔 빈 텍스트로 초기화. 이후상태 메시지를 띄울 것이다.
-        notify.text = "";
+        if(rootTransform == null)
+        {
+            rootTransform = GameObject.Find("TrackingSpace").transform;
+        }
+        return rootTransform;
+    }
+#endif
+```
+
+</br>
+
+오큘러스에 대응하는 HandPosition을 구현한다.
+
+오큘러스에 내장된 OVRInput 클래스는 GetLocalControllerPosition()이라는 함수를 지원한다.
+
+이 함수는 컨트롤러의 로컬포지션을 반환하는데 HandPosition 프로퍼티는 월드포지션을 반환해야한다.
+
+월드포지션은 Transform.TransformPoint() 함수를 이용해 구하면 된다.
+
+이때 사용하고자 하는 공간이 static이므로 static Transform을 가져와서 사용해야하는데
+
+GetTransform() 을 이용하여 static rootTransform을 사용하여 월드로 만든다.
+
+```c#
+    public static Vector3 RHandPosition
+    {
+        get
+        {
+            ...(생략)...
+
+            //RHandPosition은 진짜 게임 월드상의 오른손 위치를 반환하는 프로퍼티이다.
+            //오큘러스에 내장된 OVRInput 클래스의 GetLocalControllerPosition() 함수를 이용하여 
+            //컨트롤러의 로컬 포지션을 가져올 수 있는데
+            //로컬 포지션을 월드포지션으로 변경하여 반환하면 적절하다.
+            //Transform.TransfromPoint()를 이용하면 된다.
+#if Oculus
+            Vector3 pos = OVRInput.GetLocalControllerPosition(OVRInput.Controller.RTouch);
+            //정적으로 설정된 공간에서 TransformPoint(Vector3 position)을 사용하기 위해서는
+            //정적으로 선언된 트랜스폼 인스턴스를 가져와서 사용해야 쓸 수 있다.
+            pos = GetTransform().TransformPoint(pos);
+            return pos;
+#endif
+```
+
+오큘러스에 대응하는 RHandDirection 만들기
+
+위와 비슷한 방식으로 OVRInput.GetLocalControllerRotation(OVRInput.Controller.RTouch)로
+
+로컬 로테이션을 가져올 수 있다. 그런데 이것이 반환하는 값은 쿼터니언 값이다.
+
+쿼터니언 값으로 원하는 방향벡터를 얻고 싶으면 그 방향 벡터를 곱해서 얻는다.
+
+그렇게 얻은 로컬 방향 벡터를 월드 벡터로 바꿔주면 된다.
+
+```c#
+    public static Vector3 RHandDirection
+    {
+        get
+        {
+            ...(생략)...
+#if Oculus
+            Vector3 direction = OVRInput.GetLocalControllerRotation(OVRInput.Controller.RTouch) * Vector3.forward;
+            direction = GetTransform().TransformDirection(direction);
+            return direction;
+#endif
+        }
+    }
+```
+
+LHandPosition과 LHandDirection은 같은 방식으로 Controller 인자를 LTouch로 바꿔주기만하면 된다.
+
+RHand와 LHand 트랜스폼객체를 등록하는 것은 더 간단하다. 
+
+TrackingSpace 안에는 오큘러스 하드웨어가 인체의 동작을 추적하여 각 객체에 정보를 업데이트 하는 자식객체들이 많다.
+
+그중 왼쪽 오른쪽 손의 정보를 저장하는 객체들은 각각 LeftHandAnchor, RightHandAnchor 이다. 이것들을 각각의 프로퍼티에서 세팅하고 반환하면 된다.
+
+</br>
+
+## 1.2.2 열거형 타입 정의
+
+</br>
+
+PC와 달리 ButtonTarget을 설정할 필요가 없다. 각 버튼의 쓰임새에 맞는 명칭들이 이미 존재한다.
+
+```c#
+    public enum Button
+    {
+#elif Oculus
+        One = OVRInput.Button.One, Two = OVRInput.Button.Two,
+        Thumbstick = OVRInput.Button.PrimaryThumbstick, 
+        IndexTrigger = OVRInput.Button.PrimaryIndexTrigger, 
+        HandTrigger = OVRInput.Button.PrimaryHandTrigger
+#endif
+    }
+    public enum Controller
+    {
+#elif Oculus
+        LTouch = OVRInput.Controller.LTouch,
+        RTouch = OVRInput.Controller.RTouch
+#endif
+    }
+```
+
+</br>
+
+## 1.2.3 Get, GetDown, GetUp
+
+</br>
+
+오큘러스 환경에서 사용가능한 OVRInput 클래스의 각 함수들을 적절하게 반환하는 형식으로 사용한다.
+
+```c#
+    public static bool Get(Button virtualMask, Controller hand = Controller.RTouch)
+    {
+#elif Oculus
+        return OVRInput.Get((OVRInput.Button)virtualMask, (OVRInput.Controller)hand);
+#endif
+    }
+
+    //전달인자인 매개변수는 위의 Get함수와 동일하며
+    //위의 Get함수는 GetButton메소드를 사용하기 위한 함수였다면,
+    //GetDown함수는 각 플랫폼별 GetButtonDown을 사용하기 위한 함수다.
+    public static bool GetDown(Button virtualMask, Controller hand = Controller.RTouch)
+    {
+#elif Oculus
+        return OVRInput.GetDown((OVRInput.Button)virtualMask, (OVRInput.Controller)hand);
+#endif
+    }
+    public static bool GetUp(Button virtualMask, Controller hand = Controller.RTouch)
+    {
+#elif Oculus
+        return OVRInput.GetUp((OVRInput.Button)virtualMask, (OVRInput.Controller)hand);
+#endif
+```
+
+</br>
+
+## 1.2.4 GetAxis 함수 구현하기
+
+</br>
+
+PC 환경에서의 Input.GetAxis(axis) 는 float을 반환하는 함수입니다. 연속체크가 가능함.
+
+그것을 오큘러스 환경에서는 OVRInput.Get() 함수가 대체합니다. OVRInput.Get() 함수의 원형은
+
+public static Vector2 Get(Axis2D virtualMask, Controller controllerMask = Controller.Active)
+
+Vector2 타입을 리턴하며 가로축 입력은 x에 저장되고, 세로축 입력은 y에 저장됩니다.
+
+float 값을 반환하는 함수로 대체를 해주기 위해서는 조건에따라서 x를 반환할지 y를 반환할지 결정하면 됩니다.
+
+```c#
+    public static float GetAxis(string axis, Controller hand = Controller.LTouch)
+    {
+        //PC 환경에서는 GetAxis(축문자열)의 반환값을 반환한다.
+#if PC
+        return Input.GetAxis(axis);
+#elif Oculus
+        if(axis == "Horizontal")
+        {
+            return OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick, (OVRInput.Controller)hand).x;
+        }
+        else
+        {
+            return OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick, (OVRInput.Controller)hand).y;
+        }
+#endif
+    }
+```
+
+</br>
+
+## 1.2.5 진동 함수 PlayVibration
+
+</br>
+
+오큘러스 API 내부에 있는 OVRInput 클래스의 SetControllerVibration() 함수를 이용해서 진동가능
+
+위의 함수는 2초 진동하고 끝나는 방식으로 단순하기에 섬세하게 제어하려면 코루틴을 사용해야함.
+
+코루틴은 MonoBehaviour 를 상속받아 씬에서 계속 등록되어 있어야 사용할 수 있다.
+
+하지만 ARAVRInput 클래스는 static 클래스로 결이 다른 클래스이다.
+
+그래서 ARAVRInput.cs 파일 안에 MonoBehaviour를 상속받으면서 씬이 넘어가더라도 
+
+사라지지 않고 계속 존재하는 클래스를 만들어 준다.(싱글톤 스타일)
+
+MonoBehaviour를 상속받는 클래스를 이용해서 코루틴을 사용할 것이다.
+
+```c#
+//ARAVRInput 클래스에서 사용할 코루틴 객체
+class CoroutineInstance : MonoBehaviour
+{
+    public static CoroutineInstance coroutineInstance = null;
+    private void Awake()
+    {
+        if(coroutineInstance == null)
+        {
+            coroutineInstance = this;
+        }
+        DontDestroyOnLoad(gameObject);
     }
 }
 ```
 
-</br>
+진동을 제어할 코루틴 함수를 만들기. VibrationCoroutine() 함수를 만든다.
 
-## 4.9.2.2 사용자 아이디 = 키, 패스워드 = 값 으로 저장하는 기능
+duration: 지속시간, frequency: 빈도, Amplitude: 진동 크기, hand: RTouch또는 LTouch
 
-</br>
-
-데이터를 게임 외 공간에 저장하고 불러오는 기능을 구현하려면 파일 입출력 기능을 만들어야 한다.
-
-기본적으로 저장공간과 메모리공간을 연결다리 역할인 Stream을 제어하는 방식으로 사용한다. 
-
-유니티에서는 보다 쉽게 데이터르를 관리하라고 PlayerPrefs라는 클래스를 제공한다.
-
-정수형, 실수형, 문자열 데이터들을 Get/Set 함수들로 관리하는데 사용법은 다음과 같다.
+OVRInput의 SetControllerVibration()함수를 세부제어하는 코루틴이다. 
 
 ```c#
-PlayerPrefs.SetString(저장할 키값, 저장할 밸류값);
+#if Oculus
+    static IEnumerator VibrationCoroutine(float duration, float frequency, float amplitude, Controller hand)
+    {
+        float currentTime = 0;
 
-GetString(키값) == 저장된 밸류값;
+        //전달된 인수인 duration 동안 반복할려고 한다.
+        //2초 이상 반복하기 위해 
+        while (currentTime < duration)
+        {
+            //시간 누적으로 지속시간을 확인한다.
+            currentTime += Time.deltaTime;
 
-HasKey(키값);//해당 키값을 가지고 있으면 참 반환 
+            //반복 누적호출되어도 상관 없음.
+            OVRInput.SetControllerVibration(frequency, amplitude, (OVRInput.Controller)hand);
+            
+            //yield return null을 하게 되면 1프레임쉬고 넘어간다는 뜻(리턴한다는 뜻은 아니다.)
+            //즉, update 함수가 실행되고 난 다음에 실행하란 뜻
+            //반복문 안에서의 yield return null은 반복문의 주기를 Update()와 동일시 하기 위함이다.
+            //yield return null을 안써주면 너무 빠른 반복으로 유니티가 크래쉬나게 된다.
+            //사실상 코루틴이 호출되게 되면 duration동안 반복 호출된다.
+            yield return null;
+        }
+        //0, 0 으로 설정하면 진동이 멈춘다. 반복문 빠져나가면 멈추게
+        OVRInput.SetControllerVibration(0,0, (OVRInput.Controller)hand);
+    }
+#endif
 ```
 
+코루틴을 작성했으니 코루틴을 사용하는 함수를 작성한다. 실질적인 오큘러스 환경의 PlayVibration()함수
 
-그래서 저장기능은 다음과 같이 만든다.
+모노비헤이비어를 상속받지 않는 스태틱 클래스에서 스타트 코루틴을 사용하기 위해
 
+싱글톤 객체가 없다면 만드는 코드를 작성.
+
+플레이중인 진동 코루틴은 항상 정지하고 코루틴을 시작한다.
 
 ```c#
-    public void SaveUserData()
+    //진동을 호출할 함수
+    public static void PlayVibration(float duration, float fequency, float amplitude, Controller hand)
     {
-        //HasKey는 키값이 존재하는지를 체크하는 함수
-        if (!PlayerPrefs.HasKey(id.text))
+        //PC 환경에선 기능이 없다.
+
+#if Oculus
+        if(CoroutineInstance.coroutineInstance == null)
         {
-            //Key and Value로 데이터 저장
-            PlayerPrefs.SetString(id.text, password.text);
-            notify.text = "아이디 생성 완료";
+            GameObject coroutineObj = new GameObject("coroutineInstance");
+            coroutineObj.AddComponent<CoroutineInstance>();
         }
-        else 
-        {
-            notify.text = "이미 존재하는 아이디 입니다.";
-        }     
+        CoroutineInstance.coroutineInstance.StopAllCoroutines();
+        CoroutineInstance.coroutineInstance.StartCoroutine(VibrationCoroutine(duration, fequency, amplitude, hand));
+#endif
     }
 ```
 
-
-
-</br>
-
-## 4.9.2.3 키를 이용해 아이디 패스워드 데이터를 읽는 기능
-
-</br>
-
-로그인을 하기 위해서는 입력하는 아이디와 패스워드가 
-
-저장된 데이터와 일치하는지를 검사해야함.
-
-그럴려면 읽어와야 함.
-
+세부적인 조정값이 없이 기본 디폴트 진동을 재생하는 함수를 오버로딩으로 만든다.
 
 ```c#
-    public void CheckUserData()
+    public static void PlayVibration(Controller hand)
     {
-        string tempPassword = PlayerPrefs.GetString(id.text);
+        //PC 환경에선 기능이 없다.
 
-        if(tempPassword == password.text)
-        {
-            SceneManager.LoadScene(1);
-        }
-        else
-        {
-            notify.text = "입력한 정보와 일치하는 데이터가 존재 하지 않습니다.";
-        }
-    }
-```
-
-</br>
-
-
-## 4.9.2.4 사용자의 입력이 비어있는 상태에서는 기능 잠금
-
-</br>
-
-사용자 입력이 빈칸이 있다면, 위에 짠 함수를 호출할때 예외가 발생하며 에러를 발생시킨다.
-
-InputField의 텍스트값에 접근하는데 값이 없을 것이기 때문.
-
-그렇다면 조건 검사하고 아무것도 안하고 끝내는 함수를 구현한 뒤에 
-
-위의 각 기능들 앞에 호출한다.
-
-```c#
-    bool CheckInput(string id, string pwd)
-    {
-        if(id == "" || pwd == "")
-        {
-            notify.text = "아이디 또는 패스워드를 입력하세요.";
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+#if Oculus
+        PlayVibration(0.06f, 1, 1, hand);
+#endif
     }
 ```
 
 </br>
 
-## 4.9.2.5 기능 연결
+## 1.2.6 원하는 방향으로 중심을 재설정하는 Recenter()
 
 </br>
 
-빈 게임오브젝트 객체 LoginManager 생성. 각 값에 public 연결하고
+OVRManager의 display 객체가 가지고 있는 RecenterPos() 함수가 이 기능을 제공한다.
 
-버튼마다 OnClick 이벤트 추가. 한 뒤에 빌드세팅 씬넘버 추가.
-
-</br>
-
-# 4.9.3 비동기 씬 로딩하기
-
-</br>
-
-로딩이 오래 걸릴때 그 씬을 숨겨놓고 씬이 로딩이 다 되고나서 보여주는 
-
-방식을 비동기적인 방식이라 한다.
-
-> 목표
-
-    다음 씬을 비동기 방식으로 로드하고 싶다. 또한 현재 씬에는 로딩 진행률을 시각적으로 표현하고 싶다.
-
-> 순서
-
-    1. 로딩 화면을 위한 씬을 만들고 로딩 화면 UI 구성하기
-    2. 비동기 로드 과정을 구현한 코루틴 함수 구현하기
-    3. 빌드 세팅에서 빌드 씬에 로드 씬 추가하기
+```c#
+    public static void Recenter()
+    {
+        //카메라가 바라보는 방향으로 월드 센터를 초기화 한다.
+#if Oculus
+        OVRManager.display.RecenterPose();
+#endif
+    }
+```
 
 </br>
 
-# 4.9.3.1 로딩 씬을 만들고 UI 구성
+## 1.2.7 DrawCrosshair
 
 </br>
 
-배경과 로딩슬라이더, 간단한 텍스트 정도 넣으면 로딩 씬 UI 끝.
+PC 환경에서는 OriginScale을 비교적 크게 세팅하였다. 
+
+비슷한 느낌을 주기 위해서 OriginScale을 줄이면 된다. 
+
+로직은 동일하고, 레이가 마우스 포인터가 아닌 컨트롤러에서 나간다는 것을 고려하면 된다.
+
+```c#
+#if PC
+    static Vector3 originScale = Vector3.one * 0.02f;
+#else
+    static Vector3 originScale = Vector3.one * 0.005f;
+#endif
+    public static void DrawCrosshair(Transform crosshair, bool isHand =true, Controller hand = Controller.RTouch)
+    {
+        Ray ray;
+        //컨트롤러의 위치와 방향을 이용해 레이 제작
+        if (isHand)
+        {
+#if PC
+            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+#else
+            if(hand == Controller.RTouch)
+            {
+                ray = new Ray(RHandPosition, RHandDirection);
+            }
+            else
+            {
+                ray = new Ray(LHandPosition, LHandDirection);
+            }
+#endif
+ ...(생략)...
+```
 
 
+</br></br></br></br></br></br>
